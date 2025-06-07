@@ -75,7 +75,9 @@ def fetch_news(category='headlines', lang='en'):
         print(f"Failed to fetch news: {e}")
         return []
 
-# 👇 Required for Render hosting
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  # For Render or local
     app.run(host="0.0.0.0", port=port)
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
