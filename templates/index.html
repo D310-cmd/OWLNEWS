@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="{{ current_language }}">
+<head>
+    <meta charset="UTF-8">
+    <title>Owl News</title>
+    <meta http-equiv="refresh" content="300">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 30px;
+            background-color: #f9f9f9;
+            color: #333;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #121212;
+            color: #eee;
+        }
+
+        .header {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+
+        .toggle-container {
+            text-align: right;
+            margin-top: -50px;
+            margin-bottom: 30px;
+        }
+
+        .navbar {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .navbar a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 5px;
+            background-color: #e0e0e0;
+        }
+
+        .navbar a.active {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        body.dark-mode .navbar a {
+            background-color: #333;
+            color: #eee;
+        }
+
+        body.dark-mode .navbar a.active {
+            background-color: #0d6efd;
+            color: #fff;
+        }
+
+        .lang-select {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .news-card {
+            background: white;
+            padding: 15px;
+            margin: 15px auto;
+            border-radius: 8px;
+            max-width: 800px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body.dark-mode .news-card {
+            background: #1e1e1e;
+            color: #ddd;
+        }
+
+        .news-card h3 a {
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        body.dark-mode .news-card h3 a {
+            color: #90caf9;
+        }
+
+        .dark-toggle {
+            padding: 5px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            background: #ccc;
+            border-radius: 20px;
+            border: none;
+        }
+
+        body.dark-mode .dark-toggle {
+            background: #555;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toggle-container">
+        <button onclick="toggleDarkMode()" class="dark-toggle">🌙 Dark Mode</button>
+    </div>
+
+    <div class="header">🦉 Owl News</div>
+
+    <div class="navbar">
+        <a href="/?segment=headlines&lang={{ current_language }}" class="{{ 'active' if current_segment == 'headlines' else '' }}">Headlines</a>
+        <a href="/?segment=finance&lang={{ current_language }}" class="{{ 'active' if current_segment == 'finance' else '' }}">Finance</a>
+        <a href="/?segment=jobs&lang={{ current_language }}" class="{{ 'active' if current_segment == 'jobs' else '' }}">Jobs</a>
+        <a href="/?segment=notices&lang={{ current_language }}" class="{{ 'active' if current_segment == 'notices' else '' }}">Notices</a>
+    </div>
+
+    <div class="lang-select">
+        <form method="get" action="/">
+            <input type="hidden" name="segment" value="{{ current_segment }}">
+            <label for="lang">🌐 Language:</label>
+            <select name="lang" onchange="this.form.submit()">
+                {% for code, name in languages.items() %}
+                    <option value="{{ code }}" {% if code == current_language %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    {% for article in articles %}
+        <div class="news-card">
+            <h3><a href="{{ article.url }}" target="_blank">{{ article.title }}</a></h3>
+            <p>{{ article.description }}</p>
+            <small><strong>Source:</strong> {{ article.source.name }}</small><br>
+            <small><strong>Published:</strong> {{ article.publishedAt }}</small>
+        </div>
+    {% endfor %}
+
+    <script>
+        // Dark mode toggle script
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+            updateToggleText();
+        }
+
+        function updateToggleText() {
+            const btn = document.querySelector('.dark-toggle');
+            btn.innerText = document.body.classList.contains("dark-mode") ? "☀️ Light Mode" : "🌙 Dark Mode";
+        }
+
+        // Load dark mode from localStorage on first load
+        window.onload = function () {
+            if (localStorage.getItem("darkMode") === "true") {
+                document.body.classList.add("dark-mode");
+            }
+            updateToggleText();
+        };
+    </script>
+</body>
+</html>
