@@ -6,13 +6,13 @@ import os
 
 app = Flask(__name__)
 
-API_KEY = "YOUR_GNEWS_API_KEY"  # Replace with your actual API key
+API_KEY = "a8ca4892473798d8ce4e95913b6958d0"
 
 CATEGORIES = {
-    'headlines': 'top-headlines',
+    'headlines': 'general',
     'finance': 'business',
-    'jobs': 'jobs',
-    'notices': 'nation'
+    'jobs': 'general',    # fallback to 'general' if not supported
+    'notices': 'general'  # fallback to 'general' if not supported
 }
 
 LANGUAGES = {
@@ -24,23 +24,34 @@ LANGUAGES = {
 }
 
 def fetch_news(category='headlines', lang='en'):
-    endpoint = f"https://gnews.io/api/v4/top-headlines?category={CATEGORIES.get(category, 'general')}&lang={lang}&token={API_KEY}"
-    res = requests.get(endpoint)
-    articles = res.json().get("articles", [])
+    try:
+        endpoint = f"https://gnews.io/api/v4/top-headlines?category={CATEGORIES.get(category, 'general')}&lang={lang}&token={API_KEY}"
+        print(f"Fetching: {endpoint}")
 
-    # Translate only title if language is not English
-    if lang != 'en':
-        for article in articles:
-            try:
-                translated = GoogleTranslator(source='auto', target=lang).translate(article['title'])
-                article['title'] = translated
-            except:
-                continue
-    return articles
+        res = requests.get(endpoint)
+        res.raise_for_status()
+        data = res.json()
+        articles = data.get("articles", [])
+        print(f"Got {len(articles)} articles")
+
+        # Translate titles only if lang is not English
+        if lang != 'en':
+            for article in articles:
+                try:
+                    translated = GoogleTranslator(source='auto', target=lang).translate(article['title'])
+                    article['title'] = translated
+                except Exception as e:
+                    print(f"Translation failed: {e}")
+
+        return articles
+
+    except Exception as e:
+        print(f"Failed to fetch news: {e}")
+        return []
 
 @app.route("/")
 def home():
-    category = request.args.get("category", "headlines")
+    category = request.args.get("segment", "headlines")  # match frontend param name
     selected_lang = request.args.get("lang", "en")
     news_articles = fetch_news(category=category, lang=selected_lang)
 
@@ -48,12 +59,12 @@ def home():
         "index.html",
         news=news_articles,
         languages=LANGUAGES,
-        selected=selected_lang,
-        category=category,
+        current_language=selected_lang,  # match your HTML template vars
+        current_segment=category,
         time=datetime.datetime.now()
     )
 
-# 👇 Required for Render hosting
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # For Render or local
+    port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+

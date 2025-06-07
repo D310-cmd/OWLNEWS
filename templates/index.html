@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="{{ current_language }}">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <title>Owl News</title>
-    <meta http-equiv="refresh" content="300" /> 
+    <meta http-equiv="refresh" content="900">
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -12,29 +12,24 @@
             color: #333;
             transition: background 0.3s, color 0.3s;
         }
-
         body.dark-mode {
             background-color: #121212;
             color: #eee;
         }
-
         .header {
             text-align: center;
             font-size: 2.5em;
             margin-bottom: 30px;
         }
-
         .toggle-container {
             text-align: right;
             margin-top: -50px;
             margin-bottom: 30px;
         }
-
         .navbar {
             text-align: center;
             margin-bottom: 20px;
         }
-
         .navbar a {
             margin: 0 10px;
             text-decoration: none;
@@ -44,27 +39,22 @@
             border-radius: 5px;
             background-color: #e0e0e0;
         }
-
         .navbar a.active {
             background-color: #007BFF;
             color: white;
         }
-
         body.dark-mode .navbar a {
             background-color: #333;
             color: #eee;
         }
-
         body.dark-mode .navbar a.active {
             background-color: #0d6efd;
             color: #fff;
         }
-
         .lang-select {
             margin-top: 10px;
             text-align: center;
         }
-
         .news-card {
             background: white;
             padding: 15px;
@@ -74,21 +64,17 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             transition: background 0.3s, color 0.3s;
         }
-
         body.dark-mode .news-card {
             background: #1e1e1e;
             color: #ddd;
         }
-
         .news-card h3 a {
             text-decoration: none;
             color: #007BFF;
         }
-
         body.dark-mode .news-card h3 a {
             color: #90caf9;
         }
-
         .dark-toggle {
             padding: 5px 12px;
             font-size: 14px;
@@ -97,7 +83,6 @@
             border-radius: 20px;
             border: none;
         }
-
         body.dark-mode .dark-toggle {
             background: #555;
             color: white;
@@ -113,15 +98,15 @@
     <div class="header">🦉 Owl News</div>
 
     <div class="navbar">
-        <a href="/?category=headlines&lang={{ current_language }}" class="{{ 'active' if current_segment == 'headlines' else '' }}">Headlines</a>
-        <a href="/?category=finance&lang={{ current_language }}" class="{{ 'active' if current_segment == 'finance' else '' }}">Finance</a>
-        <a href="/?category=jobs&lang={{ current_language }}" class="{{ 'active' if current_segment == 'jobs' else '' }}">Jobs</a>
-        <a href="/?category=notices&lang={{ current_language }}" class="{{ 'active' if current_segment == 'notices' else '' }}">Notices</a>
+        <a href="/?segment=headlines&lang={{ current_language }}" class="{{ 'active' if current_segment == 'headlines' else '' }}">Headlines</a>
+        <a href="/?segment=finance&lang={{ current_language }}" class="{{ 'active' if current_segment == 'finance' else '' }}">Finance</a>
+        <a href="/?segment=jobs&lang={{ current_language }}" class="{{ 'active' if current_segment == 'jobs' else '' }}">Jobs</a>
+        <a href="/?segment=notices&lang={{ current_language }}" class="{{ 'active' if current_segment == 'notices' else '' }}">Notices</a>
     </div>
 
     <div class="lang-select">
         <form method="get" action="/">
-            <input type="hidden" name="category" value="{{ current_segment }}">
+            <input type="hidden" name="segment" value="{{ current_segment }}">
             <label for="lang">🌐 Language:</label>
             <select name="lang" onchange="this.form.submit()">
                 {% for code, name in languages.items() %}
@@ -131,22 +116,20 @@
         </form>
     </div>
 
-    {% if news|length == 0 %}
-        <p style="text-align:center; font-style: italic;">No news available currently.</p>
+    {% if news %}
+        {% for article in news %}
+            <div class="news-card">
+                <h3><a href="{{ article.url }}" target="_blank">{{ article.title }}</a></h3>
+                <p>{{ article.description }}</p>
+                <small><strong>Source:</strong> {{ article.source.name }}</small><br>
+                <small><strong>Published:</strong> {{ article.publishedAt }}</small>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="text-align: center;">😔 No news available. Try again later.</p>
     {% endif %}
 
-    {% for article in news %}
-    <div class="news-card">
-        <h3><a href="{{ article.url }}" target="_blank">{{ article.title }}</a></h3>
-        <p>{{ article.description }}</p>
-        <small><strong>Source:</strong> {{ article.source.name }}</small><br>
-        <small><strong>Published:</strong> {{ article.publishedAt }}</small>
-    </div>
-{% endfor %}
-
-
     <script>
-        // Dark mode toggle script
         function toggleDarkMode() {
             document.body.classList.toggle("dark-mode");
             localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
@@ -158,7 +141,6 @@
             btn.innerText = document.body.classList.contains("dark-mode") ? "☀️ Light Mode" : "🌙 Dark Mode";
         }
 
-        // Load dark mode from localStorage on first load
         window.onload = function () {
             if (localStorage.getItem("darkMode") === "true") {
                 document.body.classList.add("dark-mode");
@@ -166,6 +148,5 @@
             updateToggleText();
         };
     </script>
-
 </body>
 </html>
