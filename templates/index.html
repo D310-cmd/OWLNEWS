@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="{{ current_language }}">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Owl News</title>
-    <meta http-equiv="refresh" content="300">
+    <meta http-equiv="refresh" content="900" /> <!-- Refresh every 15 minutes -->
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -113,15 +113,15 @@
     <div class="header">🦉 Owl News</div>
 
     <div class="navbar">
-        <a href="/?segment=headlines&lang={{ current_language }}" class="{{ 'active' if current_segment == 'headlines' else '' }}">Headlines</a>
-        <a href="/?segment=finance&lang={{ current_language }}" class="{{ 'active' if current_segment == 'finance' else '' }}">Finance</a>
-        <a href="/?segment=jobs&lang={{ current_language }}" class="{{ 'active' if current_segment == 'jobs' else '' }}">Jobs</a>
-        <a href="/?segment=notices&lang={{ current_language }}" class="{{ 'active' if current_segment == 'notices' else '' }}">Notices</a>
+        <a href="/?category=headlines&lang={{ current_language }}" class="{{ 'active' if current_segment == 'headlines' else '' }}">Headlines</a>
+        <a href="/?category=finance&lang={{ current_language }}" class="{{ 'active' if current_segment == 'finance' else '' }}">Finance</a>
+        <a href="/?category=jobs&lang={{ current_language }}" class="{{ 'active' if current_segment == 'jobs' else '' }}">Jobs</a>
+        <a href="/?category=notices&lang={{ current_language }}" class="{{ 'active' if current_segment == 'notices' else '' }}">Notices</a>
     </div>
 
     <div class="lang-select">
         <form method="get" action="/">
-            <input type="hidden" name="segment" value="{{ current_segment }}">
+            <input type="hidden" name="category" value="{{ current_segment }}">
             <label for="lang">🌐 Language:</label>
             <select name="lang" onchange="this.form.submit()">
                 {% for code, name in languages.items() %}
@@ -131,13 +131,16 @@
         </form>
     </div>
 
-    {% for article in news %}
+    {% if news|length == 0 %}
+        <p style="text-align:center; font-style: italic;">No news available currently.</p>
+    {% endif %}
 
+    {% for article in news %}
         <div class="news-card">
-            <h3><a href="{{ article.url }}" target="_blank">{{ article.title }}</a></h3>
+            <h3><a href="{{ article.url }}" target="_blank" rel="noopener noreferrer">{{ article.title }}</a></h3>
             <p>{{ article.description }}</p>
-            <small><strong>Source:</strong> {{ article.source.name }}</small><br>
-            <small><strong>Published:</strong> {{ article.publishedAt }}</small>
+            <small><strong>Source:</strong> {{ article.source.name }}</small><br />
+            <small><strong>Published:</strong> {{ article.publishedAt[:10] }}</small>
         </div>
     {% endfor %}
 
@@ -162,5 +165,6 @@
             updateToggleText();
         };
     </script>
+
 </body>
 </html>
