@@ -131,7 +131,8 @@
         </form>
     </div>
 
-    {% for article in articles %}
+    {% for article in news %}
+
         <div class="news-card">
             <h3><a href="{{ article.url }}" target="_blank">{{ article.title }}</a></h3>
             <p>{{ article.description }}</p>
