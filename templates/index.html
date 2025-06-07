@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>Owl News</title>
-    <meta http-equiv="refresh" content="900" /> <!-- Refresh every 15 minutes -->
+    <meta http-equiv="refresh" content="300" /> 
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -136,13 +136,14 @@
     {% endif %}
 
     {% for article in news %}
-        <div class="news-card">
-            <h3><a href="{{ article.url }}" target="_blank" rel="noopener noreferrer">{{ article.title }}</a></h3>
-            <p>{{ article.description }}</p>
-            <small><strong>Source:</strong> {{ article.source.name }}</small><br />
-            <small><strong>Published:</strong> {{ article.publishedAt[:10] }}</small>
-        </div>
-    {% endfor %}
+    <div class="news-card">
+        <h3><a href="{{ article.url }}" target="_blank">{{ article.title }}</a></h3>
+        <p>{{ article.description }}</p>
+        <small><strong>Source:</strong> {{ article.source.name }}</small><br>
+        <small><strong>Published:</strong> {{ article.publishedAt }}</small>
+    </div>
+{% endfor %}
+
 
     <script>
         // Dark mode toggle script
