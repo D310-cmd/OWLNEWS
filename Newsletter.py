@@ -52,6 +52,28 @@ def home():
         category=category,
         time=datetime.datetime.now()
     )
+def fetch_news(category='headlines', lang='en'):
+    try:
+        endpoint = f"https://gnews.io/api/v4/top-headlines?category={CATEGORIES.get(category, 'general')}&lang={lang}&token={API_KEY}"
+        res = requests.get(endpoint)
+        res.raise_for_status()
+        data = res.json()
+
+        articles = data.get("articles", [])
+
+        if lang != 'en':
+            for article in articles:
+                try:
+                    translated = GoogleTranslator(source='auto', target=lang).translate(article['title'])
+                    article['title'] = translated
+                except Exception as e:
+                    print(f"Translation failed: {e}")
+
+        return articles
+
+    except Exception as e:
+        print(f"Failed to fetch news: {e}")
+        return []
 
 # 👇 Required for Render hosting
 if __name__ == "__main__":
